@@ -3,6 +3,7 @@ package com.example.receiverapp
 import android.os.Bundle
 import android.os.Debug
 import android.util.Log
+import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -33,6 +34,8 @@ class MainActivity : ComponentActivity(), DataClient.OnDataChangedListener {
                 if(dataItem.uri.path == "/heart_rate"){
                     val dataMap = dataItem.data?.let { DataMap.fromByteArray(it) }
                     val heartRate = dataMap?.getFloat("heart_rate")
+                    val showHeartRate = findViewById<TextView>(R.id.heartRate)
+                    showHeartRate.text = heartRate.toString()
                     Log.d("Receicved","$heartRate")
                 }
             }
