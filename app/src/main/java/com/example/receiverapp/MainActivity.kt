@@ -1,36 +1,52 @@
 package com.example.receiverapp
 
+import android.annotation.SuppressLint
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothServerSocket
+import android.bluetooth.BluetoothSocket
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
+import androidx.core.app.ActivityCompat
 import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.DataEvent
 import com.google.android.gms.wearable.DataEventBuffer
 import com.google.android.gms.wearable.DataMap
+import java.io.IOException
+import java.io.InputStream
+import java.util.UUID
 
-class MainActivity : ComponentActivity(), DataClient.OnDataChangedListener {
+class MainActivity: ComponentActivity(){
+
+    private lateinit var bluetooth: BluetoothServer
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.main_activity)
+        val ReceivedMessage: TextView = findViewById(R.id.heartRate)
+
+        bluetooth = BluetoothServer(this,ReceivedMessage)
+
+        startBluetoothReceiver()
+
     }
 
-    override fun onDataChanged(dataEvents: DataEventBuffer) {
-        for(event in dataEvents){
-            if(event.type == DataEvent.TYPE_CHANGED){
-                val dataItem = event.dataItem
-                if(dataItem.uri.path == "/heart_rate"){
-                    val dataMap = dataItem.data?.let { DataMap.fromByteArray(it) }
-                    val heartRate = dataMap?.getFloat("heart_rate")
-                    val showHeartRate = findViewById<TextView>(R.id.heartRate)
-                    showHeartRate.text = heartRate.toString()
-                    Log.d("Receicved","$heartRate")
-                }
-            }
+    private fun startBluetoothReceiver(){
+        Thread{
+            bluetooth.startListening()
+        }.start()
+    }
 
-        }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        bluetooth.stopListening()
     }
 
 }
