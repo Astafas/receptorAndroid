@@ -14,13 +14,14 @@ import java.io.IOException
 import java.io.InputStream
 import java.util.UUID
 
-class BluetoothServer(val context: Context, val textView: TextView, val stateText: TextView)  {
+class BluetoothServer(val context: Context, val textView: TextView)  {
 
     private val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     private val uuid: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
     private var serverSocket: BluetoothServerSocket? = null
     private var sendEmergency: Boolean = true
     private var HeartRateValues = mutableListOf<Int>()
+    private var activatePTT: Boolean = true
 
 
     @SuppressLint("MissingPermission")
@@ -50,9 +51,18 @@ class BluetoothServer(val context: Context, val textView: TextView, val stateTex
                 val receivedData = String(buffer,0,bytes)
                 val HeartRateString = receivedData.split("\n")
                 Log.d("Mensaje",HeartRateString[0])
-                UpdateText(HeartRateString[0])
                 val heartRateVal:Int = HeartRateString[0].toInt()
-                if(heartRateVal > 100){
+                if(heartRateVal >= 0)
+                    UpdateText(HeartRateString[0])
+                if(heartRateVal == -10 && activatePTT){
+                    ActivatePTT()
+                    activatePTT = false
+                }
+                else if(heartRateVal == -15){
+                    deactivatePTT()
+                    activatePTT = true
+                }
+                else if(heartRateVal > 100){
                     if(sendEmergency) {
                         ActivateEmergency(context)
                         sendEmergency = false
@@ -73,10 +83,26 @@ class BluetoothServer(val context: Context, val textView: TextView, val stateTex
         }
     }
 
-    private fun UpdateStateText(message: String){
+   /*private fun UpdateStateText(message: String){
         (context as Activity).runOnUiThread{
             stateText.text = message
         }
+    }*/
+
+    private fun ActivatePTT(){
+        (context as Activity).runOnUiThread(Runnable() {
+            context.sendBroadcast(Intent("com.airbus.pmr.action.PTT_START"))
+            Log.d("PTT", "PTT Activado")
+            Toast.makeText(context, "PTT Activado", Toast.LENGTH_LONG).show()
+        })
+    }
+
+    private fun deactivatePTT(){
+        (context as Activity).runOnUiThread(Runnable() {
+            context.sendBroadcast(Intent("com.airbus.pmr.action.PTT_STOP"))
+            Log.d("PTT", "PTT Desactivado")
+            Toast.makeText(context, "PTT Desactivado", Toast.LENGTH_LONG).show()
+        })
     }
 
 
