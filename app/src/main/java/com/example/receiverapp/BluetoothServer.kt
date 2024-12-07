@@ -6,17 +6,22 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothServerSocket
 import android.bluetooth.BluetoothSocket
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.widget.TextView
+import android.widget.Toast
 import java.io.IOException
 import java.io.InputStream
 import java.util.UUID
 
-class BluetoothServer(val context: Context, val textView: TextView)  {
+class BluetoothServer(val context: Context, val textView: TextView, val stateText: TextView)  {
 
     private val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     private val uuid: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
     private var serverSocket: BluetoothServerSocket? = null
+    private var sendEmergency: Boolean = true
+    private var HeartRateValues = mutableListOf<Int>()
+
 
     @SuppressLint("MissingPermission")
     fun startListening(){
@@ -43,8 +48,16 @@ class BluetoothServer(val context: Context, val textView: TextView)  {
             while (true){
                 bytes = inputStream.read(buffer)
                 val receivedData = String(buffer,0,bytes)
-                Log.d("Mensaje",receivedData)
-                UpdateText(receivedData)
+                val HeartRateString = receivedData.split("\n")
+                Log.d("Mensaje",HeartRateString[0])
+                UpdateText(HeartRateString[0])
+                val heartRateVal:Int = HeartRateString[0].toInt()
+                if(heartRateVal > 100){
+                    if(sendEmergency) {
+                        ActivateEmergency(context)
+                        sendEmergency = false
+                    }
+                }
             }
         } catch (e: IOException){
             Log.e("Message", "Error al leer datos: ${e.message}")
@@ -60,9 +73,27 @@ class BluetoothServer(val context: Context, val textView: TextView)  {
         }
     }
 
+    private fun UpdateStateText(message: String){
+        (context as Activity).runOnUiThread{
+            stateText.text = message
+        }
+    }
+
+
+
     private fun UpdateText(message: String){
         (context as Activity).runOnUiThread{
             textView.text = message
+        }
+    }
+
+    companion object{
+        public fun ActivateEmergency(context: Context){
+            (context as Activity).runOnUiThread(Runnable(){
+                Log.d("Emergency", "Mensaje enviado")
+                context.sendBroadcast(Intent("com.airbus.pmr.action.EMERGENCY_START"))
+                Toast.makeText(context,"Emergencia activada", Toast.LENGTH_LONG).show()
+            })
         }
     }
 

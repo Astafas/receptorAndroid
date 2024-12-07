@@ -5,14 +5,18 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothServerSocket
 import android.bluetooth.BluetoothSocket
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import androidx.core.app.ActivityCompat
+import com.example.receiverapp.BluetoothServer.Companion.ActivateEmergency
 import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.DataEvent
 import com.google.android.gms.wearable.DataEventBuffer
@@ -35,6 +39,10 @@ class MainActivity: ComponentActivity(){
 
         startBluetoothReceiver()
 
+        val emergency_button: Button = findViewById(R.id.emergency_button)
+        emergency_button.setOnClickListener {
+            ActivateEmergency(this);
+        }
     }
 
     private fun startBluetoothReceiver(){
