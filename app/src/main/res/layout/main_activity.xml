@@ -1,45 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
+    <TextView
+        android:id="@+id/heartRate"
         android:layout_width="match_parent"
-        android:layout_height="338dp"
-        android:layout_marginTop="1dp"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="319dp"
+        android:layout_marginBottom="321dp"
+        android:gravity="center"
+        android:text="0000"
+        android:textAlignment="center"
+        android:textColor="#02122E"
+        android:textSize="54sp"
+        android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/stateText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#AF0C0C"
-            android:text="TextView"
-            android:textColor="#E0E0E0"
-            android:textSize="24sp"
-            android:translationY="90dp" />
+    <TextView
+        android:id="@+id/bpm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="390dp"
+        android:layout_marginBottom="284dp"
+        android:gravity="top"
+        android:text="BPM"
+        android:textAlignment="center"
+        android:textColor="#02122E"
+        android:textSize="34sp" />
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:layout_marginTop="199dp"
-            android:text="Frecuencia cardíaca:"
-            android:textAlignment="center"
-            android:textSize="34sp" />
+    <TextView
+        android:id="@+id/stateText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#AF0C0C"
+        android:text="TextView"
+        android:textColor="#E0E0E0"
+        android:textSize="24sp"
+        android:translationY="90dp" />
 
-        <TextView
-            android:id="@+id/heartRate"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginBottom="175dp"
-            android:gravity="center"
-            android:text="0000"
-            android:textAlignment="center"
-            android:textSize="34sp" />
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="269dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="49dp"
+        android:layout_marginEnd="52dp"
+        android:layout_marginBottom="398dp"
+        app:srcCompat="@drawable/circle_hollow_healthy" />
 
-    </LinearLayout>
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="249dp"
+        android:layout_height="110dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="80dp"
+        android:layout_marginEnd="81dp"
+        android:layout_marginBottom="20dp"
+        app:srcCompat="@drawable/airbus" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="136dp"
+        android:layout_height="91dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="138dp"
+        android:layout_marginTop="489dp"
+        android:layout_marginEnd="137dp"
+        android:layout_marginBottom="151dp"
+        app:srcCompat="@drawable/heart" />
 
 </RelativeLayout>

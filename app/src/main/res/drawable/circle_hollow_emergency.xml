@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <!-- Relleno transparente para que sea hueco -->
+    <solid android:color="@android:color/transparent" />
+
+    <!-- Define el borde del círculo -->
+    <stroke
+        android:width="12dp"
+        android:color="@color/emergency" /> <!-- Color morado -->
+</shape>

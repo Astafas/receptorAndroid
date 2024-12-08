@@ -135,7 +135,7 @@ class BluetoothServer(val context: Context, val textView: TextView, val stateTEx
 
     private fun UpdateText(message: String){
         (context as Activity).runOnUiThread{
-            textView.text = "$message ppm"
+            textView.text = message
         }
     }
 
