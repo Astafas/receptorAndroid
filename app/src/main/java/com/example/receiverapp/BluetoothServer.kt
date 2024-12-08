@@ -7,25 +7,29 @@ import android.bluetooth.BluetoothServerSocket
 import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import java.io.IOException
 import java.io.InputStream
 import java.util.UUID
 
-class BluetoothServer(val context: Context, val textView: TextView)  {
+class BluetoothServer(val context: Context, val textView: TextView, val stateTExt: TextView)  {
 
     private val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     private val uuid: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
     private var serverSocket: BluetoothServerSocket? = null
     private var sendEmergency: Boolean = true
-    private var HeartRateValues = mutableListOf<Int>()
     private var activatePTT: Boolean = true
+    private var heart_rate_prom = 0
+    private var cont: Int = 0
 
 
     @SuppressLint("MissingPermission")
     fun startListening(){
+        UpdateState("Estado: Normal",R.color.healthy)
         try {
             while (true) {
                 serverSocket =
@@ -54,6 +58,7 @@ class BluetoothServer(val context: Context, val textView: TextView)  {
                 val heartRateVal:Int = HeartRateString[0].toInt()
                 if(heartRateVal >= 0)
                     UpdateText(HeartRateString[0])
+
                 if(heartRateVal == -10 && activatePTT){
                     ActivatePTT()
                     activatePTT = false
@@ -62,8 +67,30 @@ class BluetoothServer(val context: Context, val textView: TextView)  {
                     deactivatePTT()
                     activatePTT = true
                 }
-                else if(heartRateVal > 100){
-                    if(sendEmergency) {
+
+                if(cont<20 && heartRateVal > 0) {
+                    cont++
+                    heart_rate_prom += heartRateVal
+                }
+                else if(cont >= 20){
+                    cont = 0
+                    heart_rate_prom /= 20
+                    Log.d("Promedio","Promedio: $heart_rate_prom")
+                    heart_rate_prom = 0
+                }
+
+                when{
+                    heartRateVal > 120 && sendEmergency->{
+                        UpdateState("Estado: Emergencia",R.color.emergency)
+                        ActivateEmergency(context)
+                        sendEmergency = false
+                    }
+                    heart_rate_prom in 61..100 && !sendEmergency ->{
+                        UpdateState("Estado: Normal",R.color.healthy)
+                        sendEmergency = true
+                    }
+                    heartRateVal in 10..60 && sendEmergency ->{
+                        UpdateState("Estado: Emergencia",R.color.emergency)
                         ActivateEmergency(context)
                         sendEmergency = false
                     }
@@ -83,17 +110,11 @@ class BluetoothServer(val context: Context, val textView: TextView)  {
         }
     }
 
-   /*private fun UpdateStateText(message: String){
-        (context as Activity).runOnUiThread{
-            stateText.text = message
-        }
-    }*/
-
     private fun ActivatePTT(){
         (context as Activity).runOnUiThread(Runnable() {
             context.sendBroadcast(Intent("com.airbus.pmr.action.PTT_START"))
             Log.d("PTT", "PTT Activado")
-            Toast.makeText(context, "PTT Activado", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "PTT Activado", Toast.LENGTH_SHORT).show()
         })
     }
 
@@ -101,15 +122,20 @@ class BluetoothServer(val context: Context, val textView: TextView)  {
         (context as Activity).runOnUiThread(Runnable() {
             context.sendBroadcast(Intent("com.airbus.pmr.action.PTT_STOP"))
             Log.d("PTT", "PTT Desactivado")
-            Toast.makeText(context, "PTT Desactivado", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "PTT Desactivado", Toast.LENGTH_SHORT).show()
         })
     }
 
-
+    private fun UpdateState(message: String, colorId: Int){
+        (context as Activity).runOnUiThread{
+            stateTExt.setBackgroundColor(ContextCompat.getColor(context,colorId))
+            stateTExt.text = message
+        }
+    }
 
     private fun UpdateText(message: String){
         (context as Activity).runOnUiThread{
-            textView.text = message
+            textView.text = "$message ppm"
         }
     }
 

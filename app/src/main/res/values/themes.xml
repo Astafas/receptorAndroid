@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.ReceiverApp" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.ReceiverApp" parent="Theme.AppCompat.Light.DarkActionBar" >
+        <item name="android:statusBarColor">@color/blue</item>
+    </style>
+
+    <style name="Theme.MyApp" parent="Theme.AppCompat.DayNight.DarkActionBar">
+        <item name="colorPrimary">#0f123b</item>
+        <item name="colorPrimaryDark">#101fad</item>
+        <item name="android:statusBarColor">#101fad</item>
+    </style>
 </resources>
